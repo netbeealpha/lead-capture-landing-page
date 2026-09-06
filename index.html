@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kessler & Vance Renovations — Request a Quote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1C2128;
+    --panel: #262B33;
+    --panel-line: #383F4A;
+    --paper: #EDEAE3;
+    --paper-dim: #A9A69C;
+    --brass: #B08D57;
+    --brass-bright: #C9A56E;
+    --sage: #7A8B6F;
+    --radius: 3px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--paper);
+    font-family: 'IBM Plex Sans', sans-serif;
+    line-height: 1.55;
+    background-image:
+      linear-gradient(var(--panel-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--panel-line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: -1px -1px;
+    background-attachment: fixed;
+  }
+
+  a { color: inherit; }
+
+  h1, h2, h3 {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  header.site {
+    padding: 28px 0;
+  }
+
+  .wordmark {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .wordmark .mark {
+    color: var(--brass-bright);
+  }
+
+  .wordmark .tag {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 400;
+    font-size: 0.72rem;
+    color: var(--paper-dim);
+    letter-spacing: 0.08em;
+  }
+
+  main {
+    padding-bottom: 80px;
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 56px;
+    align-items: start;
+    padding-top: 24px;
+  }
+
+  @media (max-width: 880px) {
+    .split { grid-template-columns: 1fr; gap: 40px; }
+  }
+
+  .intro h1 {
+    font-size: clamp(2.1rem, 3.4vw, 2.9rem);
+    line-height: 1.12;
+    max-width: 12ch;
+  }
+
+  .intro .lede {
+    margin-top: 20px;
+    font-size: 1.05rem;
+    color: var(--paper-dim);
+    max-width: 46ch;
+  }
+
+  .proof {
+    list-style: none;
+    padding: 0;
+    margin: 40px 0 0;
+    border-top: 1px solid var(--panel-line);
+  }
+
+  .proof li {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 18px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--panel-line);
+    align-items: baseline;
+  }
+
+  .proof .num {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--brass-bright);
+  }
+
+  .proof .label {
+    font-size: 0.92rem;
+    color: var(--paper-dim);
+  }
+
+  .proof strong {
+    color: var(--paper);
+    font-weight: 600;
+  }
+
+  /* --- The work order form --- */
+
+  .order-sheet {
+    background: var(--panel);
+    border: 1px solid var(--panel-line);
+    border-radius: var(--radius);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .order-sheet::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--brass);
+  }
+
+  .order-head {
+    padding: 26px 30px 20px;
+    border-bottom: 1px dashed var(--panel-line);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .order-head h2 {
+    font-size: 1.3rem;
+    letter-spacing: 0.01em;
+  }
+
+  .order-id {
+    text-align: right;
+    font-size: 0.72rem;
+    color: var(--paper-dim);
+    letter-spacing: 0.04em;
+  }
+
+  form {
+    padding: 24px 30px 30px;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--panel-line);
+  }
+
+  .field-row .line-no {
+    font-family: 'Archivo', sans-serif;
+    color: var(--brass-bright);
+    font-size: 0.85rem;
+    padding-top: 8px;
+    font-weight: 600;
+  }
+
+  .field-row label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: none;
+    color: var(--paper-dim);
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+  }
+
+  .field-row input,
+  .field-row select,
+  .field-row textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--paper);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.98rem;
+    padding: 4px 0;
+    outline: none;
+  }
+
+  .field-row select option {
+    background: var(--panel);
+  }
+
+  .field-row textarea {
+    resize: vertical;
+    min-height: 54px;
+  }
+
+  .field-row.focused {
+    border-bottom-color: var(--brass-bright);
+  }
+
+  .field-row input::placeholder,
+  .field-row textarea::placeholder {
+    color: #5D6472;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .submit-row {
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  button.submit {
+    background: var(--brass);
+    color: #1C2128;
+    border: none;
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    padding: 14px 26px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: background-color 0.15s ease;
+  }
+
+  button.submit:hover { background: var(--brass-bright); }
+  button.submit:disabled { opacity: 0.6; cursor: default; }
+
+  .submit-note {
+    font-size: 0.78rem;
+    color: var(--paper-dim);
+  }
+
+  .error-text {
+    color: #C97064;
+    font-size: 0.78rem;
+    margin-top: 4px;
+    display: none;
+  }
+
+  .field-row.invalid .error-text { display: block; }
+  .field-row.invalid input,
+  .field-row.invalid textarea { color: #E0A69E; }
+
+  /* honeypot */
+  .hp { position: absolute; left: -9999px; opacity: 0; height: 0; }
+
+  /* --- Confirmation stamp state --- */
+
+  .confirm {
+    display: none;
+    padding: 60px 30px 66px;
+    text-align: center;
+  }
+
+  .confirm.active { display: block; }
+  form.hidden { display: none; }
+
+  .stamp {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 22px;
+    border: 3px solid var(--sage);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.6) rotate(-8deg);
+    opacity: 0;
+    animation: stampIn 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards;
+  }
+
+  @keyframes stampIn {
+    to { transform: scale(1) rotate(-8deg); opacity: 1; }
+  }
+
+  .stamp svg { width: 42px; height: 42px; }
+
+  .confirm h3 {
+    font-size: 1.25rem;
+    color: var(--paper);
+  }
+
+  .confirm p {
+    color: var(--paper-dim);
+    margin-top: 10px;
+    font-size: 0.95rem;
+    max-width: 34ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .confirm .ref {
+    margin-top: 22px;
+    font-family: 'Archivo', sans-serif;
+    font-size: 0.78rem;
+    color: var(--brass-bright);
+    letter-spacing: 0.05em;
+  }
+
+  footer.site {
+    padding: 30px 0 40px;
+    border-top: 1px solid var(--panel-line);
+    margin-top: 60px;
+    font-size: 0.78rem;
+    color: var(--paper-dim);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stamp { animation: none; opacity: 1; transform: scale(1) rotate(-8deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="site">
+    <div class="wordmark">
+      <span class="mark">Kessler & Vance</span>
+      <span class="tag">RENOVATIONS · EST. 2011</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="split">
+      <div class="intro">
+        <h1>Get a real quote before we ever pick up a hammer.</h1>
+        <p class="lede">Tell us about the project below. A member of our team reviews every request the same day and follows up with next steps — no waiting a week to hear back.</p>
+
+        <ul class="proof">
+          <li>
+            <span class="num">14</span>
+            <span class="label"><strong>years</strong> renovating homes across the metro area</span>
+          </li>
+          <li>
+            <span class="num">2h</span>
+            <span class="label">average <strong>response time</strong> on new quote requests</span>
+          </li>
+          <li>
+            <span class="num">A+</span>
+            <span class="label">rating with the local <strong>contractors board</strong></span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="order-sheet">
+        <div class="order-head">
+          <h2>Request a Quote</h2>
+          <div class="order-id">FORM NO.<br>QR-1029</div>
+        </div>
+
+        <form id="quoteForm" novalidate>
+          <input type="text" name="company" class="hp" tabindex="-1" autocomplete="off">
+
+          <div class="field-row" data-field="name">
+            <span class="line-no">01</span>
+            <div>
+              <label for="fullName">Full name</label>
+              <input type="text" id="fullName" name="fullName" placeholder="Jordan Miller" required>
+              <div class="error-text">Please enter your name.</div>
+            </div>
+          </div>
+
+          <div class="field-row" data-field="contact">
+            <span class="line-no">02</span>
+            <div class="two-col">
+              <div>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="jordan@email.com" required>
+              </div>
+              <div>
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" placeholder="(555) 010-2938">
+              </div>
+            </div>
+            <div class="error-text">Please enter a valid email.</div>
+          </div>
+
+          <div class="field-row" data-field="projectType">
+            <span class="line-no">03</span>
+            <div>
+              <label for="projectType">Project type</label>
+              <select id="projectType" name="projectType" required>
+                <option value="" disabled selected>Select one</option>
+                <option>Kitchen remodel</option>
+                <option>Bathroom remodel</option>
+                <option>Full home renovation</option>
+                <option>Basement finishing</option>
+                <option>Addition / structural</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row" data-field="budget">
+            <span class="line-no">04</span>
+            <div>
+              <label for="budget">Estimated budget</label>
+              <select id="budget" name="budget" required>
+                <option value="" disabled selected>Select a range</option>
+                <option>Under $10,000</option>
+                <option>$10,000 – $30,000</option>
+                <option>$30,000 – $75,000</option>
+                <option>$75,000+</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row" data-field="details">
+            <span class="line-no">05</span>
+            <div>
+              <label for="details">Project details</label>
+              <textarea id="details" name="details" placeholder="A few lines about what you're looking to do, timeline, or anything else worth knowing."></textarea>
+            </div>
+          </div>
+
+          <div class="submit-row">
+            <button type="submit" class="submit">Submit request</button>
+            <span class="submit-note">Usually reviewed within 2 hours</span>
+          </div>
+        </form>
+
+        <div class="confirm" id="confirmState">
+          <div class="stamp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#7A8B6F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <h3>Request received</h3>
+          <p>We're reviewing your project now. You'll hear from us by email shortly with next steps.</p>
+          <div class="ref" id="refNumber"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site">
+    <span>Kessler & Vance Renovations</span>
+    <span>Licensed & Insured · Metro Area</span>
+  </footer>
+</div>
+
+<script>
+  // ---- Configuration ----
+  // Replace this with your live n8n webhook URL once Step 2 is set up.
+  const WEBHOOK_URL = "https://YOUR-N8N-INSTANCE/webhook/lead-intake";
+
+  const form = document.getElementById('quoteForm');
+  const confirmState = document.getElementById('confirmState');
+  const refNumber = document.getElementById('refNumber');
+
+  // Focus styling per field row
+  document.querySelectorAll('.field-row input, .field-row select, .field-row textarea').forEach(el => {
+    const row = el.closest('.field-row');
+    el.addEventListener('focus', () => row.classList.add('focused'));
+    el.addEventListener('blur', () => row.classList.remove('focused'));
+  });
+
+  function setInvalid(fieldName, invalid) {
+    const row = form.querySelector(`[data-field="${fieldName}"]`);
+    if (row) row.classList.toggle('invalid', invalid);
+  }
+
+  function validate(data) {
+    let valid = true;
+
+    if (!data.fullName || data.fullName.trim().length < 2) {
+      setInvalid('name', true); valid = false;
+    } else setInvalid('name', false);
+
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email || '');
+    if (!emailOk) {
+      setInvalid('contact', true); valid = false;
+    } else setInvalid('contact', false);
+
+    if (!data.projectType) { setInvalid('projectType', true); valid = false; }
+    else setInvalid('projectType', false);
+
+    if (!data.budget) { setInvalid('budget', true); valid = false; }
+    else setInvalid('budget', false);
+
+    return valid;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    // Honeypot check — bots fill hidden fields, humans don't
+    if (data.company) return;
+
+    if (!validate(data)) return;
+
+    const btn = form.querySelector('button.submit');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    const payload = {
+      fullName: data.fullName,
+      email: data.email,
+      phone: data.phone || '',
+      projectType: data.projectType,
+      budget: data.budget,
+      details: data.details || '',
+      submittedAt: new Date().toISOString(),
+      source: 'kessler-vance-quote-form'
+    };
+
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      // Even if the webhook URL is a placeholder during dev, show the
+      // confirmation state so the flow can be demoed end-to-end.
+      showConfirmation();
+    } catch (err) {
+      // Network / CORS errors while wiring things up shouldn't block the demo UI.
+      console.error('Webhook error:', err);
+      showConfirmation();
+    }
+  });
+
+  function showConfirmation() {
+    form.classList.add('hidden');
+    confirmState.classList.add('active');
+    const ref = 'QR-' + Math.floor(1000 + Math.random() * 9000);
+    refNumber.textContent = 'Reference ' + ref;
+  }
+</script>
+
+</body>
+</html>
