@@ -1,0 +1,362 @@
+{
+  "name": "Kessler & Vance – AI Lead Intake & Scoring",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "quote-request",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://netbeealpha.github.io"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type"
+              }
+            ]
+          }
+        }
+      },
+      "id": "7eafbb4e-797b-4c99-bbf9-429e5eccaaa3",
+      "name": "Webhook - Lead Intake",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "c9c5720b-4e2a-434c-855b-608e81c7712c"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1",
+              "name": "fullName",
+              "type": "string",
+              "value": "={{ $json.body.fullName }}"
+            },
+            {
+              "id": "f2",
+              "name": "email",
+              "type": "string",
+              "value": "={{ $json.body.email }}"
+            },
+            {
+              "id": "f3",
+              "name": "phone",
+              "type": "string",
+              "value": "={{ $json.body.phone }}"
+            },
+            {
+              "id": "f4",
+              "name": "projectType",
+              "type": "string",
+              "value": "={{ $json.body.projectType }}"
+            },
+            {
+              "id": "f5",
+              "name": "budget",
+              "type": "string",
+              "value": "={{ $json.body.budget }}"
+            },
+            {
+              "id": "f6",
+              "name": "details",
+              "type": "string",
+              "value": "={{ $json.body.details }}"
+            },
+            {
+              "id": "f7",
+              "name": "submittedAt",
+              "type": "string",
+              "value": "={{ $json.body.submittedAt }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "65945ad1-d183-4c5b-a917-7b57afe3560c",
+      "name": "Normalize Lead Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"openai/gpt-oss-20b\",\n  \"response_format\": {\"type\": \"json_object\"},\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a lead-qualification assistant for a home renovation company called Kessler & Vance. Given a quote request, respond with ONLY a JSON object with three keys: score (one of: hot, warm, cold), summary (one sentence describing the lead ), and suggestedAction (one sentence on what the sales team should do next). Score hot for larger budgets or urgent language, cold for vague requests or very small budgets, warm otherwise.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Name: {{ $json.fullName }}\\nProject type: {{ $json.projectType }}\\nBudget: {{ $json.budget }}\\nDetails: {{ $json.details }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "358c151b-8d4a-43b6-9ff0-08048046b9d5",
+      "name": "AI Lead Scoring",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "jpzGrzRtyqWMXjyR",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $('Normalize Lead Fields').item.json;\nconst aiRaw = $input.item.json.choices[0].message.content;\nlet parsed;\ntry {\n  parsed = JSON.parse(aiRaw);\n} catch (e) {\n  parsed = { score: 'warm', summary: 'Could not parse AI response.', suggestedAction: 'Review manually.' };\n}\n\nreturn {\n  json: {\n    ...lead,\n    score: parsed.score,\n    summary: parsed.summary,\n    suggestedAction: parsed.suggestedAction\n  }\n};"
+      },
+      "id": "5396e455-0091-476b-8aa8-723311eab90a",
+      "name": "Parse AI Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "11f6Zdn03D0jQoAYXeccuw76g9DtjBAKbX-cpvQCC_dw",
+          "mode": "list",
+          "cachedResultName": "Lead Capture",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11f6Zdn03D0jQoAYXeccuw76g9DtjBAKbX-cpvQCC_dw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11f6Zdn03D0jQoAYXeccuw76g9DtjBAKbX-cpvQCC_dw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "daa9b8d8-ea3d-490a-90ce-430dab090d7f",
+      "name": "Log to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        960,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "n5KIlv956FFM2ylq",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "We've received your renovation quote request",
+        "message": "=Hi {{ $json.fullName }},<br><br>Thanks for reaching out to Kessler & Vance Renovations. We've received your request for a <strong>{{ $json.projectType }}</strong> project and a member of our team will follow up shortly with next steps.<br><br>If anything changes in the meantime, just reply to this email.<br><br>— Kessler & Vance Renovations",
+        "options": {}
+      },
+      "id": "5775cdf4-9810-4f86-82c4-a6c35a8a32e8",
+      "name": "Send Auto-Reply Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        0
+      ],
+      "webhookId": "d253fee1-39d0-464c-ab7d-b577913dbfed",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4w0Z6kXJZsJU9rXn",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true\n}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "[https://netbeealpha.github.io](https://netbeealpha.github.io)"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type, Authorization, ngrok-skip-browser-warning"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "POST, GET, OPTIONS"
+              }
+            ]
+          }
+        }
+      },
+      "id": "087b3e3e-7865-4742-b065-853a77cd2eff",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        0
+      ]
+    }
+  ],
+  "pinData": {
+    "Webhook - Lead Intake": [
+      {
+        "json": {
+          "headers": {
+            "host": "stalemate-passenger-crib.ngrok-free.dev",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
+            "content-length": "238",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9,bn;q=0.8",
+            "content-type": "application/json",
+            "origin": "https://netbeealpha.github.io",
+            "priority": "u=1, i",
+            "referer": "https://netbeealpha.github.io/",
+            "sec-ch-ua": "\"Chromium\";v=\"152\", \"Not?A_Brand\";v=\"24\", \"Google Chrome\";v=\"152\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "x-forwarded-for": "45.251.228.81",
+            "x-forwarded-host": "stalemate-passenger-crib.ngrok-free.dev",
+            "x-forwarded-proto": "https"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "fullName": "Md Ripon Islam",
+            "email": "stackbind@gmail.com",
+            "phone": "01763204027",
+            "projectType": "Full home renovation",
+            "budget": "$75,000+",
+            "details": "I need to ",
+            "submittedAt": "2026-09-07T06:42:28.561Z",
+            "source": "kessler-vance-quote-form"
+          },
+          "webhookUrl": "https://stalemate-passenger-crib.ngrok-free.dev/webhook/quote-request",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook - Lead Intake": {
+      "main": [
+        [
+          {
+            "node": "Normalize Lead Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Lead Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Lead Scoring",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Lead Scoring": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Result": {
+      "main": [
+        [
+          {
+            "node": "Log to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Send Auto-Reply Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Auto-Reply Email": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "50f285ae-0a8f-4969-92f6-34128c2487d2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "94169c47cd4fd3d5958d257fc38d43ef063359eb907ecd432d4c6385b1f8047f"
+  },
+  "nodeGroups": [],
+  "id": "IEyI63K1XIU68wW1",
+  "tags": []
+}
